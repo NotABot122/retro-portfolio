@@ -1,0 +1,380 @@
+@import url('https://fonts.googleapis.com/css2?family=VT323&family=Share+Tech+Mono&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --bezel-top: 52px;
+  --bezel-side: 56px;
+  --bezel-bottom: 56px;
+  --win95-bg: #008080;
+  --win95-gray: #c0c0c0;
+  --win95-dark-gray: #808080;
+  --win95-darker-gray: #404040;
+  --win95-light-gray: #dfdfdf;
+  --win95-white: #ffffff;
+  --win95-black: #000000;
+  --win95-blue: #000080;
+  --win95-title-text: #ffffff;
+  --win95-border-light: #ffffff;
+  --win95-border-shadow: #808080;
+  --win95-border-dark: #404040;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Share Tech Mono', monospace;
+  background-color: var(--win95-bg);
+  overflow: hidden;
+  height: 100vh;
+  width: 100vw;
+  padding: var(--bezel-top) var(--bezel-side) var(--bezel-bottom);
+  cursor: default;
+  user-select: none;
+}
+
+.win95-raised {
+  border-top: 2px solid var(--win95-border-light);
+  border-left: 2px solid var(--win95-border-light);
+  border-right: 2px solid var(--win95-border-dark);
+  border-bottom: 2px solid var(--win95-border-dark);
+}
+
+.win95-inset {
+  border-top: 2px solid var(--win95-border-shadow);
+  border-left: 2px solid var(--win95-border-shadow);
+  border-right: 2px solid var(--win95-border-light);
+  border-bottom: 2px solid var(--win95-border-light);
+}
+
+.win95-window {
+  background-color: var(--win95-gray);
+  border-top: 2px solid var(--win95-border-light);
+  border-left: 2px solid var(--win95-border-light);
+  border-right: 2px solid var(--win95-border-dark);
+  border-bottom: 2px solid var(--win95-border-dark);
+  box-shadow: 2px 2px 0px var(--win95-black);
+}
+
+.win95-titlebar {
+  background: linear-gradient(to right, #000080, #1084d0);
+  padding: 3px 4px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  user-select: none;
+}
+
+.win95-titlebar-text {
+  color: #fff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  font-weight: bold;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.win95-btn {
+  background-color: var(--win95-gray);
+  border-top: 2px solid var(--win95-border-light);
+  border-left: 2px solid var(--win95-border-light);
+  border-right: 2px solid var(--win95-border-dark);
+  border-bottom: 2px solid var(--win95-border-dark);
+  color: #000;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 16px;
+  height: 14px;
+  padding: 0 3px;
+}
+
+.win95-btn:active {
+  border-top: 2px solid var(--win95-border-dark);
+  border-left: 2px solid var(--win95-border-dark);
+  border-right: 2px solid var(--win95-border-light);
+  border-bottom: 2px solid var(--win95-border-light);
+}
+
+.win95-button {
+  background-color: var(--win95-gray);
+  border-top: 2px solid var(--win95-border-light);
+  border-left: 2px solid var(--win95-border-light);
+  border-right: 2px solid var(--win95-border-dark);
+  border-bottom: 2px solid var(--win95-border-dark);
+  color: #000;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 6px 16px;
+  user-select: none;
+}
+
+.win95-button:active { 
+  border-top: 2px solid var(--win95-border-dark);
+  border-left: 2px solid var(--win95-border-dark);
+  border-right: 2px solid var(--win95-border-light);
+  border-bottom: 2px solid var(--win95-border-light);
+}
+
+::-webkit-scrollbar { width: 16px; height: 16px; }
+::-webkit-scrollbar-track { background: #c0c0c0; }
+::-webkit-scrollbar-thumb {
+  background: var(--win95-gray);
+  border-top: 2px solid var(--win95-border-light);
+  border-left: 2px solid var(--win95-border-light);
+  border-right: 2px solid var(--win95-border-dark);
+  border-bottom: 2px solid var(--win95-border-dark);
+}
+
+@keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0; } }
+@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+@keyframes slideIn { from { transform: scale(0.95); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes bootProgress { from { width: 0%; } to { width: 100%; } }
+@keyframes flicker { 0%,100%{opacity:1}92%{opacity:1}93%{opacity:.6}94%{opacity:1}96%{opacity:.8}97%{opacity:1} }
+
+.boot-screen {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.animate-blink { animation: blink 1s step-end infinite; }
+.animate-fadein { animation: fadeIn 0.25s ease-in-out; }
+.animate-slidein { animation: slideIn 0.2s ease-out; }
+.animate-flicker { animation: flicker 8s infinite; }
+
+/* 90s CRT monitor bezel */
+.monitor-frame {
+  position: fixed;
+  inset: 0;
+  border-style: solid;
+  border-width: var(--bezel-top) var(--bezel-side) var(--bezel-bottom);
+  border-top-color: #a09a86;
+  border-left-color: #9c9682;
+  border-right-color: #504e42;
+  border-bottom-color: #48463c;
+  box-shadow:
+    inset 0 4px 32px rgba(0,0,0,0.75),
+    inset 0 -2px 10px rgba(0,0,0,0.4),
+    0 20px 70px rgba(0,0,0,0.95);
+  pointer-events: none;
+  z-index: 10001;
+}
+
+/* Screen vignette + glare */
+.scanlines::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background:
+    linear-gradient(152deg, rgba(255,255,255,0.07) 0%, rgba(255,255,255,0.025) 32%, transparent 52%),
+    radial-gradient(ellipse 90% 84% at 50% 50%, transparent 36%, rgba(0,0,0,0.74) 100%);
+  pointer-events: none;
+  z-index: 9998;
+}
+
+/* Scanlines */
+.scanlines::after {
+  content: '';
+  position: fixed;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(255,255,255,0.015) 0px,
+    rgba(255,255,255,0.015) 1px,
+    transparent 1px,
+    transparent 2px,
+    rgba(0,0,0,0.14) 2px,
+    rgba(0,0,0,0.14) 3px,
+    transparent 3px,
+    transparent 4px
+  );
+  pointer-events: none;
+  z-index: 9999;
+}
+
+.desktop-icon {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  cursor: pointer;
+  width: 80px;
+  user-select: none;
+}
+
+.icon-label {
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 11px;
+  color: white;
+  text-align: center;
+  padding: 1px 3px;
+  word-break: break-word;
+  line-height: 1.2;
+  text-shadow: 1px 1px 2px black, -1px -1px 2px black;
+}
+
+.desktop-icon:hover .icon-label,
+.desktop-icon:focus .icon-label {
+  background-color: #000080;
+}
+
+.taskbar {
+  position: fixed;
+  bottom: var(--bezel-bottom);
+  left: var(--bezel-side);
+  right: var(--bezel-side);
+  height: 36px;
+  background-color: var(--win95-gray);
+  border-top: 2px solid var(--win95-border-light);
+  display: flex;
+  align-items: center;
+  padding: 2px 4px;
+  gap: 4px;
+  z-index: 1000;
+}
+
+.start-button {
+  background-color: var(--win95-gray);
+  border-top: 2px solid var(--win95-border-light);
+  border-left: 2px solid var(--win95-border-light);
+  border-right: 2px solid var(--win95-border-dark);
+  border-bottom: 2px solid var(--win95-border-dark);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  font-weight: bold;
+  cursor: pointer;
+  padding: 2px 8px;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 28px;
+  user-select: none;
+}
+
+.start-button.open {
+  border-top: 2px solid var(--win95-border-dark);
+  border-left: 2px solid var(--win95-border-dark);
+  border-right: 2px solid var(--win95-border-light);
+  border-bottom: 2px solid var(--win95-border-light);
+}
+
+.start-menu {
+  position: fixed;
+  bottom: calc(var(--bezel-bottom) + 36px);
+  left: calc(var(--bezel-side) + 4px);
+  background-color: var(--win95-gray);
+  border-top: 2px solid var(--win95-border-light);
+  border-left: 2px solid var(--win95-border-light);
+  border-right: 2px solid var(--win95-border-dark);
+  border-bottom: 2px solid var(--win95-border-dark);
+  box-shadow: 2px 2px 0 #000;
+  z-index: 2000;
+  min-width: 180px;
+  display: flex;
+}
+
+.start-menu-stripe {
+  width: 22px;
+  background: linear-gradient(to top, #000080, #1084d0);
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 6px;
+  font-family: 'VT323', monospace;
+  font-size: 16px;
+  color: rgba(255,255,255,0.5);
+  writing-mode: vertical-rl;
+  transform: rotate(180deg);
+  letter-spacing: 3px;
+  user-select: none;
+}
+
+.start-menu-items { flex: 1; padding: 4px 0; }
+
+.start-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 12px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 13px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.start-menu-item:hover { background-color: #000080; color: white; }
+
+.taskbar-clock {
+  margin-left: auto;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-top: 2px solid var(--win95-border-shadow);
+  border-left: 2px solid var(--win95-border-shadow);
+  border-right: 2px solid var(--win95-border-light);
+  border-bottom: 2px solid var(--win95-border-light);
+  height: 28px;
+  display: flex;
+  align-items: center;
+  white-space: nowrap;
+}
+
+.taskbar-window-btn {
+  background-color: var(--win95-gray);
+  border-top: 2px solid var(--win95-border-light);
+  border-left: 2px solid var(--win95-border-light);
+  border-right: 2px solid var(--win95-border-dark);
+  border-bottom: 2px solid var(--win95-border-dark);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 12px;
+  cursor: pointer;
+  padding: 2px 8px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  min-width: 100px;
+  max-width: 150px;
+  overflow: hidden;
+  white-space: nowrap;
+  user-select: none;
+}
+
+.taskbar-window-btn.active {
+  border-top: 2px solid var(--win95-border-dark);
+  border-left: 2px solid var(--win95-border-dark);
+  border-right: 2px solid var(--win95-border-light);
+  border-bottom: 2px solid var(--win95-border-light);
+  background-color: #b8b8b8;
+}
+
+.win95-content {
+  background-color: #fff;
+  border-top: 2px solid var(--win95-border-shadow);
+  border-left: 2px solid var(--win95-border-shadow);
+  border-right: 2px solid var(--win95-border-light);
+  border-bottom: 2px solid var(--win95-border-light);
+  overflow-y: auto;
+  user-select: text;
+}
+
+.win95-divider {
+  border: none;
+  border-top: 1px solid var(--win95-border-shadow);
+  border-bottom: 1px solid var(--win95-border-light);
+  margin: 4px 0;
+}
