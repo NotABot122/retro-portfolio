@@ -23,7 +23,7 @@ const PROJECTS: Project[] = [
     title: "ITPO — Inventory Tracking & Procurement Optimizer",
     description:
       "A multi-tenant SaaS, live in production, that turns raw stock movements into buy decisions for small and mid-size businesses: track SKUs, forecast demand from usage history, compute reorder points and EOQ, then generate purchase recommendations priced against the cheapest supplier it can find. The interesting half isn't the CRUD — it's the price pipeline. A scheduled scraper works cheapest-path-first, caching a verified CSS/JSON-LD selector per domain so every repeat scrape costs zero API credits, and falling back to a single schema-forced LLM extraction only when the free path fails. A discovery step goes further: for a SKU with no supplier at all, it searches Google Shopping, organic web and Tavily, and only ever creates a supplier once it has actually priced a real URL.",
-    tech: ["Next.js 16", "TypeScript", "Supabase", "PostgreSQL", "Trigger.dev", "Tailwind", "Recharts", "Zod"],
+    tech: ["Next.js 16", "TypeScript", "Supabase", "PostgreSQL", "Trigger.dev", "Tailwind", "Recharts", "Zod", "Claude Code"],
     demo: "https://itpodeployment.vercel.app/",
     status: "In Progress",
     icon: "📦",
@@ -41,7 +41,7 @@ const PROJECTS: Project[] = [
     title: "NFL Fantasy Value Model",
     description:
       "A machine learning system that scores every fantasy-relevant NFL player (QB/RB/WR/TE) from 0–100 on two horizons: redraft (next season's PPR points) and dynasty (three discounted seasons). Built on 211 engineered features from 16 seasons of free nflverse data, with a LightGBM baseline benchmarked head-to-head against a career-sequence transformer in PyTorch. The hard part wasn't the models — it was proving no future information leaks into a feature, so every score is validated with walk-forward backtesting where the model is retrained from scratch for each test season.",
-    tech: ["Python", "LightGBM", "PyTorch", "Polars", "NumPy", "nflreadpy"],
+    tech: ["Python", "LightGBM", "PyTorch", "Polars", "NumPy", "nflreadpy", "Claude Code"],
     status: "Complete",
     icon: "🧠",
     viewer: { label: "📊 View Player Grades", kind: "grades" },
@@ -58,7 +58,7 @@ const PROJECTS: Project[] = [
     title: "Vision Rock Paper Scissors",
     description:
       "A physical game of rock paper scissors played against the computer through a webcam. MediaPipe's hand landmarker tracks 21 points on your hand in real time, and a rule-based classifier reads your throw from finger geometry — no training data required. The part that makes it feel like the real game is the pump detector: a state machine watching wrist velocity counts the three fist pumps you'd actually do in person, then freezes for 1.5 seconds so you have to commit to your throw before the CPU reveals its own.",
-    tech: ["Python", "OpenCV", "MediaPipe", "NumPy"],
+    tech: ["Python", "OpenCV", "MediaPipe", "NumPy", "Claude Code"],
     github: "https://github.com/NotABot122/PythonRockPaperScissors",
     status: "Complete",
     icon: "✌️",
@@ -75,7 +75,7 @@ const PROJECTS: Project[] = [
     title: "Madden 99",
     description:
       "An NFL roster-building game where two wheels decide your fate and you decide the roster. Spin a season from 2001–2025 and a division, then draft a seven-man skill core — 1 QB, 2 HBs, 3 WRs and a TE — chasing the highest possible team overall. Built on real Madden ratings for every season, with three modes: Classic, Extreme (overalls hidden while you draft) and Hard (one team, one season, no division safety net). It runs inside this portfolio — open the Fun Zone, or hit Live Demo below.",
-    tech: ["TypeScript", "Next.js", "React", "Tailwind", "Python"],
+    tech: ["TypeScript", "Next.js", "React", "Tailwind", "Python", "Claude Code"],
     github: "https://github.com/NotABot122/madden-99-game",
     demo: "/madden/",
     status: "Complete",
@@ -92,7 +92,7 @@ const PROJECTS: Project[] = [
     title: "Beale Cipher Cryptanalysis",
     description:
       "A computational attack on the Beale Ciphers, a famously unsolved 19th-century book cipher. Only one of the three ciphers has ever been broken — using the Declaration of Independence as its key — leaving the other two open for 140 years. This project searches for the missing key texts at scale: it decodes candidate documents as book ciphers across every possible start offset, scores the resulting plaintext with a character-level language model, and analyses the numbering drift in the known solution to constrain what the remaining keys could look like.",
-    tech: ["Python", "NumPy", "Statistics", "Cryptanalysis"],
+    tech: ["Python", "NumPy", "Statistics", "Cryptanalysis", "Claude Code"],
     status: "In Progress",
     icon: "🔐",
     highlights: [
