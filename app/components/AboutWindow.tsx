@@ -38,7 +38,7 @@ export default function AboutWindow() {
         <ExpItem
           role="B.S. Computer Science — Paul G. Allen School"
           company="University of Washington · Seattle, WA"
-          period="Sep 2025 – Dec 2028"
+          period="Sep 2025 – Jun 2028"
           description="Currently enrolled in the Allen School for Computer Science."
         />
         <ExpItem
