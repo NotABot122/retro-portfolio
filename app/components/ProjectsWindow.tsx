@@ -37,6 +37,28 @@ const PROJECTS: Project[] = [
     ],
   },
   {
+    id: 9,
+    title: "Project Rubber Ducky — CodeAI Adaptive Learning Engine",
+    description:
+      "An adaptive coding tutor built in a team of six at the AWS Breaking Barriers Hackathon for CodeAI, the nonprofit that writes K-12 computer science curriculum. The problem it attacks is differentiation: one teacher, one room, and struggling, on-pace and advanced students all at once — the top-rated teacher pain point on Code.org for six years running. A student takes a short readiness check, and what it finds seeds a real Python project they then build level by level — SQLite retrieval, conditionals, loops, functions — with every submission graded in a separate process and turned into feedback, a hint, or a practice problem inserted before the level that needs it. The design rule the whole system is built around is that the AI is never load-bearing: deterministic rules own grading and routing, Amazon Bedrock is an optional layer on top, and anything the model gets wrong falls back to a fixed path that still walks the student to the end of the lesson.",
+    tech: ["Python", "TypeScript", "React 18", "MUI 7", "Blockly", "Amazon Bedrock", "Bedrock AgentCore", "Amazon S3 + KMS", "SQLite", "Kiro"],
+    github: "https://github.com/NotABot122/project-rubber-ducky",
+    status: "Complete",
+    icon: "🦆",
+    highlights: [
+      "My part in the six-way split was the AWS security and deployment surface — the S3 + KMS student-data store and its least-privilege IAM policy, the diagnostic's AgentCore runtime behind Cognito OAuth, the local safety rules converted into a managed Bedrock Guardrail, and the cost evaluation that kept the team on Haiku 4.5",
+      "Graceful degradation is measured, not asserted — 9 of 12 injected-failure scenarios (router exception, a route to a problem that does not exist, corrupted progress, grader timeout, dead hint model) still end with the student finishing the lesson; the 2 that escaped as crashes are published in the report rather than quietly dropped",
+      "The auto-grader agreed with a draft human key on 25 submissions at 0.92 (Cohen's κ 0.841) with zero false fails — the 2 false passes were both code that met the letter of the spec and not its intent, including one that dodged a banned len() call via readings.__len__()",
+      "Across 40 simulated students the readiness check hit the exact stage 80% of the time and within one stage 99%; carrying those stages into the lesson cut mean failed attempts from 1.7 to 1.35 overall, and from 4.0 to 2.5 for the weakest third, with zero practice problems given to students who did not need them",
+      "Content filtering runs two ways because neither layer is sufficient alone: an Amazon Bedrock Guardrail caught 3 of 4 adversarial cases and the local rule pre-filter caught 4 of 4, while together blocking 0 of 191 normal submissions (guardrail P50 187 ms)",
+      "The AI tutor was evaluated honestly and lost on the metric that mattered — Claude Haiku 4.5 hints scored 0.97 on accuracy against 0.47 for the teacher-written fallbacks, but handed over the answer 69% of the time against a Socratic target of never",
+      "Student work is stored in a versioned S3 bucket with its own KMS key, TLS-only and ACLs off, under an IAM policy that explicitly denies even the workshop admin role — verified live against the policy simulator — and email addresses and phone numbers are stripped from student code before it is ever written",
+      "The readiness diagnostic also deploys to Bedrock AgentCore Runtime behind Cognito OAuth, where AgentCore Identity validates the token before the request reaches any code: 401 with no token, 403 with a forged one, SigV4 refused, 200 only with a real one",
+      "Students can flip between a text editor and Blockly blocks mid-problem — code is parsed and compiled to blocks server-side (never executed), and syntax the blocks cannot represent yet (f-strings, lambdas, try) comes back naming the line and the reason instead of being silently dropped",
+      "303 Python tests plus the frontend suite, and the whole thing runs locally with no AWS account at all: `python -m webapi.server --ai off` puts it in rules-only mode, which is exactly the fallback path the evaluation exercises",
+    ],
+  },
+  {
     id: 0,
     title: "NFL Fantasy Value Model",
     description:
@@ -71,7 +93,24 @@ const PROJECTS: Project[] = [
     ],
   },
   {
-    id: 5,
+    id: 6,
+    title: "Applied Analytics — Student Outcomes",
+    description:
+      "An exploratory analysis of what actually separates students who land a job placement from those who don't, across 5,000 student records and 18 variables — prior academics, CGPA, technical and soft skill scores, internships, live projects, attendance and course backlogs. The script loads the dataset with pandas and works through it in deliberate passes: boxplots of every academic, skill and experience variable split by placement status, a 15-variable correlation heatmap, scatter plots pairing CGPA against technical skill, and a salary breakdown deliberately restricted to the students who were actually placed. The useful result turns out to be as much what isn't in the data as what is — pre-university scores, internship count and certifications all land near zero, while backlogs emerge as the single strongest signal.",
+    tech: ["Python", "pandas", "Matplotlib", "seaborn"],
+    status: "In Progress",
+    icon: "🎓",
+    highlights: [
+      "5,000 students × 18 columns, but only 17.3% were placed — so every group comparison runs against a heavily imbalanced outcome",
+      "Backlogs are the strongest correlate of placement at r = −0.40, ahead of CGPA (+0.28), technical skill (+0.25) and soft skill (+0.20)",
+      "Pre-university academics are effectively noise: SSC, HSC, degree percentage and entrance exam score all sit within ±0.02 of zero correlation with placement",
+      "Internships, live projects, certifications and work experience come out just as flat (|r| ≤ 0.02) — the experience section mostly documents a non-result",
+      "Salary is analysed on placed students only, because correlating it across the full sample returns a misleading r = +0.92 — an artifact of every unplaced student being recorded at a salary of 0",
+      "Among placed students no measured factor explains the salary spread (max |r| = 0.08), so the analysis reports that null instead of fitting a story the data won't support",
+    ],
+  },
+  {
+    id: 7,
     title: "Madden 99",
     description:
       "An NFL roster-building game where two wheels decide your fate and you decide the roster. Spin a season from 2001–2025 and a division, then draft a seven-man skill core — 1 QB, 2 HBs, 3 WRs and a TE — chasing the highest possible team overall. Built on real Madden ratings for every season, with three modes: Classic, Extreme (overalls hidden while you draft) and Hard (one team, one season, no division safety net). It runs inside this portfolio — open the Fun Zone, or hit Live Demo below.",
@@ -88,7 +127,7 @@ const PROJECTS: Project[] = [
     ],
   },
   {
-    id: 6,
+    id: 8,
     title: "Beale Cipher Cryptanalysis",
     description:
       "A computational attack on the Beale Ciphers, a famously unsolved 19th-century book cipher. Only one of the three ciphers has ever been broken — using the Declaration of Independence as its key — leaving the other two open for 140 years. This project searches for the missing key texts at scale: it decodes candidate documents as book ciphers across every possible start offset, scores the resulting plaintext with a character-level language model, and analyses the numbering drift in the known solution to constrain what the remaining keys could look like.",
