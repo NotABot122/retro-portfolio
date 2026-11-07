@@ -11,6 +11,8 @@ interface Project {
   demo?: string;
   status: "Complete" | "In Progress" | "WIP";
   icon: string;
+  /** Standout work — renders a star beside the title in both views. */
+  featured?: boolean;
   /** Optional bullet points surfaced in the detail view. */
   highlights?: string[];
   /** Opens an in-portfolio viewer window for this project's output. */
@@ -22,123 +24,126 @@ const PROJECTS: Project[] = [
     id: 5,
     title: "ITPO — Inventory Tracking & Procurement Optimizer",
     description:
-      "A multi-tenant SaaS, live in production, that turns raw stock movements into buy decisions for small and mid-size businesses: track SKUs, forecast demand from usage history, compute reorder points and EOQ, then generate purchase recommendations priced against the cheapest supplier it can find. The interesting half isn't the CRUD — it's the price pipeline. A scheduled scraper works cheapest-path-first, caching a verified CSS/JSON-LD selector per domain so every repeat scrape costs zero API credits, and falling back to a single schema-forced LLM extraction only when the free path fails. A discovery step goes further: for a SKU with no supplier at all, it searches Google Shopping, organic web and Tavily, and only ever creates a supplier once it has actually priced a real URL.",
+      "A stock-and-ordering tool for small and mid-size businesses, live and in use today. It watches what a business gets through, works out when each item will run out, and says how much to reorder and who to buy it from, priced against the cheapest supplier it can find online. The interesting half isn't the record-keeping, it's how it finds those prices. A background job checks supplier pages on a schedule, and the first time it visits a site it figures out where on the page the price lives and remembers the spot, so every later check costs nothing. It only pays for an AI read when a page it has never seen defeats it. For an item with no supplier at all, it goes looking across shopping and web search, and refuses to add one until it has found and confirmed a real price on a real page.",
     tech: ["Next.js 16", "TypeScript", "Supabase", "PostgreSQL", "Trigger.dev", "Tailwind", "Recharts", "Zod", "Claude Code"],
     demo: "https://itpodeployment.vercel.app/",
     status: "In Progress",
     icon: "📦",
+    featured: true,
     highlights: [
-      "Multi-tenant from the schema up — org_id plus Postgres Row Level Security on every table, so tenant isolation is enforced by the database rather than by application code",
-      "The scraper spends LLM credits only on a domain's first visit: a selector is cached in domain_selectors and reused for free, and it is cached only if it actually reproduces the extracted price on the page",
-      "Every scraped price passes a validation gate — non-positive, >500% swing vs. the last price, confidence below 0.6, or a currency mismatch all land as needs_review instead of quietly poisoning price history",
-      "Politeness is built in: robots.txt parsed and cached per domain, a 2s per-domain rate limit, one concurrent scrape per domain via Trigger.dev concurrencyKey, and an extraction LLM with no tools that can only return JSON",
-      "Forecasting is pure functions over stock history — 90-day rolling usage, safety stock = Z·σ·√lead time at a 95% service level, plus EOQ and a projected depletion date",
-      "The procurement loop closes in-app: approve a recommendation, roll it into a purchase order, and export the PO or an inventory-valuation/spend report as PDF or CSV",
+      "Several companies share one system without ever seeing each other's data, and the database itself enforces that on every table — so a mistake in the app code can't leak one customer's figures to another",
+      "Reading a supplier's site costs money once and nothing afterwards, and the shortcut it remembers is only kept if it actually finds the same price again on the live page",
+      "Prices that look wrong are held back for a human instead of saved: anything zero or negative, anything more than five times the last price, anything in the wrong currency, and anything the reader wasn't confident about",
+      "It behaves itself as a visitor — it reads and follows each site's rules for automated traffic, waits two seconds between requests, never hits the same site twice at once, and the AI step is boxed in so it can only read a page and hand back an answer",
+      "Reorder points come from the last 90 days of usage plus a buffer sized so the business only runs short about one time in twenty, and every item gets a projected date it runs dry",
+      "The loop finishes in one place: approve a suggestion, turn it into a purchase order, and export the order or a spend report as a PDF or a spreadsheet",
     ],
   },
   {
     id: 9,
     title: "Project Rubber Ducky — CodeAI Adaptive Learning Engine",
     description:
-      "An adaptive coding tutor built in a team of six at the AWS Breaking Barriers Hackathon for CodeAI, the nonprofit that writes K-12 computer science curriculum. The problem it attacks is differentiation: one teacher, one room, and struggling, on-pace and advanced students all at once — the top-rated teacher pain point on Code.org for six years running. A student takes a short readiness check, and what it finds seeds a real Python project they then build level by level — SQLite retrieval, conditionals, loops, functions — with every submission graded in a separate process and turned into feedback, a hint, or a practice problem inserted before the level that needs it. The design rule the whole system is built around is that the AI is never load-bearing: deterministic rules own grading and routing, Amazon Bedrock is an optional layer on top, and anything the model gets wrong falls back to a fixed path that still walks the student to the end of the lesson.",
+      "A coding tutor that adapts to each student, built with a team of six at the AWS Breaking Barriers Hackathon for CodeAI, a nonprofit that writes computer science lessons for schools. It goes after the problem teachers rank hardest: one classroom holds students who are lost, students who are keeping up and students who are bored, and one teacher can't be in three places. A student answers a short set of warm-up questions, and what those answers reveal shapes a real Python project they then build a level at a time — pulling data out of a database, if-statements, loops, functions. Every time they submit, their code is run and checked, and the result becomes feedback, a nudge, or an extra practice problem slotted in just before the level they're about to get stuck on. The rule the whole system is built around is that the AI is never the part holding it up: ordinary rules do the marking and decide what comes next, the AI sits on top as an optional extra, and anything it gets wrong falls back to a fixed path that still walks the student to the end of the lesson.",
     tech: ["Python", "TypeScript", "React 18", "MUI 7", "Blockly", "Amazon Bedrock", "Bedrock AgentCore", "Amazon S3 + KMS", "SQLite", "Kiro"],
     github: "https://github.com/NotABot122/project-rubber-ducky",
     status: "Complete",
     icon: "🦆",
+    featured: true,
     highlights: [
-      "My part in the six-way split was the AWS security and deployment surface — the S3 + KMS student-data store and its least-privilege IAM policy, the diagnostic's AgentCore runtime behind Cognito OAuth, the local safety rules converted into a managed Bedrock Guardrail, and the cost evaluation that kept the team on Haiku 4.5",
-      "Graceful degradation is measured, not asserted — 9 of 12 injected-failure scenarios (router exception, a route to a problem that does not exist, corrupted progress, grader timeout, dead hint model) still end with the student finishing the lesson; the 2 that escaped as crashes are published in the report rather than quietly dropped",
-      "The auto-grader agreed with a draft human key on 25 submissions at 0.92 (Cohen's κ 0.841) with zero false fails — the 2 false passes were both code that met the letter of the spec and not its intent, including one that dodged a banned len() call via readings.__len__()",
-      "Across 40 simulated students the readiness check hit the exact stage 80% of the time and within one stage 99%; carrying those stages into the lesson cut mean failed attempts from 1.7 to 1.35 overall, and from 4.0 to 2.5 for the weakest third, with zero practice problems given to students who did not need them",
-      "Content filtering runs two ways because neither layer is sufficient alone: an Amazon Bedrock Guardrail caught 3 of 4 adversarial cases and the local rule pre-filter caught 4 of 4, while together blocking 0 of 191 normal submissions (guardrail P50 187 ms)",
-      "The AI tutor was evaluated honestly and lost on the metric that mattered — Claude Haiku 4.5 hints scored 0.97 on accuracy against 0.47 for the teacher-written fallbacks, but handed over the answer 69% of the time against a Socratic target of never",
-      "Student work is stored in a versioned S3 bucket with its own KMS key, TLS-only and ACLs off, under an IAM policy that explicitly denies even the workshop admin role — verified live against the policy simulator — and email addresses and phone numbers are stripped from student code before it is ever written",
-      "The readiness diagnostic also deploys to Bedrock AgentCore Runtime behind Cognito OAuth, where AgentCore Identity validates the token before the request reaches any code: 401 with no token, 403 with a forged one, SigV4 refused, 200 only with a real one",
-      "Students can flip between a text editor and Blockly blocks mid-problem — code is parsed and compiled to blocks server-side (never executed), and syntax the blocks cannot represent yet (f-strings, lambdas, try) comes back naming the line and the reason instead of being silently dropped",
-      "303 Python tests plus the frontend suite, and the whole thing runs locally with no AWS account at all: `python -m webapi.server --ai off` puts it in rules-only mode, which is exactly the fallback path the evaluation exercises",
+      "My share of the six-way split was keeping student data safe and getting things running on AWS: the encrypted store student work is written to and the rules about who may open it, putting the warm-up quiz online behind a real login, turning our hand-written safety checks into a managed filter, and the cost comparison that settled which AI model the team used",
+      "We broke it on purpose to see what happened. In 9 of 12 deliberate failures — a crash mid-lesson, a link to a problem that doesn't exist, a corrupted save, a grader that hangs, a dead AI — the student still reached the end of the lesson. The 2 that did crash are written up in the report rather than quietly dropped",
+      "Marked against a human answer key on 25 submissions, the auto-grader agreed 92% of the time and never once failed work that deserved to pass. The 2 it wrongly passed had both followed the letter of the instructions and not the point of them, one by getting around a banned shortcut and spelling it a different way",
+      "Tested against 40 simulated students, the warm-up quiz put 80% at exactly the right level and 99% within one level of it. Starting them there cut the average number of failed attempts from 1.7 to 1.35, and from 4.0 to 2.5 for the third who were struggling most, without handing extra practice to anyone who didn't need it",
+      "Two separate filters check what students type, because neither was good enough alone: the hosted one caught 3 of 4 attempts to misuse the tutor and our own checks caught all 4, and between them they wrongly blocked none of 191 ordinary submissions",
+      "The AI hints were judged honestly and lost on the thing that mattered most. They were far more accurate than the teacher-written backups, scoring 0.97 against 0.47, but they gave away the answer 69% of the time when the entire point was never to give it away",
+      "Student work is encrypted under its own key, keeps every earlier version, and can only be reached over a secure connection. The access rules shut out even the admin account we were working from — checked against AWS's own permissions tester rather than assumed — and email addresses and phone numbers are stripped out of student code before anything is saved",
+      "The warm-up quiz also runs as a hosted service behind a login, with the sign-in checked before a request reaches any of our code: no pass is turned away, a forged pass is turned away, and only a genuine one gets through",
+      "Students can switch between typing code and dragging blocks in the middle of a problem. The conversion reads their code without ever running it, and anything the blocks can't represent yet comes back pointing at the line and saying why, instead of quietly disappearing",
+      "303 tests on the Python side plus the ones covering the interface, and the whole thing runs on a laptop with no AWS account at all — switch the AI off and you get the plain-rules version, which is the same fallback the testing was built around",
     ],
   },
   {
     id: 0,
     title: "NFL Fantasy Value Model",
     description:
-      "A machine learning system that scores every fantasy-relevant NFL player (QB/RB/WR/TE) from 0–100 on two horizons: redraft (next season's PPR points) and dynasty (three discounted seasons). Built on 211 engineered features from 16 seasons of free nflverse data, with a LightGBM baseline benchmarked head-to-head against a career-sequence transformer in PyTorch. The hard part wasn't the models — it was proving no future information leaks into a feature, so every score is validated with walk-forward backtesting where the model is retrained from scratch for each test season.",
+      "A system that grades every fantasy-relevant NFL player out of 100, twice over: once for how they should do next season, and once for what they're worth across the next three. It learns from 16 seasons of free public data, boiled down into 211 things worth knowing about a player, and puts two very different kinds of model head to head. The hard part turned out to be neither of them. It was proving that nothing a model sees about a player could only have been known afterwards — so every grade is checked by walking forward through history one season at a time, rebuilding the model from scratch before each one, leaving it to guess at a future it has genuinely never seen.",
     tech: ["Python", "LightGBM", "PyTorch", "Polars", "NumPy", "nflreadpy", "Claude Code"],
     status: "Complete",
     icon: "🧠",
+    featured: true,
     viewer: { label: "📊 View Player Grades", kind: "grades" },
     highlights: [
-      "Spearman ρ 0.741 (redraft) and 0.781 (dynasty), out-of-sample across 10 and 6 test seasons",
-      "Automated leakage audit enforces truncation invariance — every feature rebuilt from a season-truncated panel must be bit-identical",
-      "Transformer lost to the GBM by 0.09–0.20 ρ at this data scale; reported honestly instead of tuned until it won",
-      "Found the LightGBM huber default was fitting the median and collapsing predictions to a [34, 83] band — switching to L2 on √PPR cut MAE from 50.8 to 29.6",
-      "Calibrated scores: a 90+ finishes top-decile 39% of the time; 44–52% top-12 hit rate, in line with published benchmarks",
+      "On seasons it had never trained on, the order it ranked players in matched how they actually finished: 0.74 for next-season grades across 10 seasons, 0.78 for three-year value across 6",
+      "An automatic check catches any statistic that accidentally peeks at the future — cut the data off at a given season, rebuild every number from scratch, and it has to come out exactly as it did before",
+      "The fancier neural-network model lost to the simpler one, and by a clear margin at this amount of data. Reported as it came out rather than tuned until it won",
+      "A default setting was quietly squashing every prediction into a narrow band in the middle of the range; changing how the model is scored while it trains cut the average error from 50.8 to 29.6",
+      "The grades mean what they claim: a player graded 90 or above finishes in the top tenth of his position 39% of the time and in the top 12 about half the time, which is in line with published models",
     ],
   },
   {
     id: 4,
     title: "Vision Rock Paper Scissors",
     description:
-      "A physical game of rock paper scissors played against the computer through a webcam. MediaPipe's hand landmarker tracks 21 points on your hand in real time, and a rule-based classifier reads your throw from finger geometry — no training data required. The part that makes it feel like the real game is the pump detector: a state machine watching wrist velocity counts the three fist pumps you'd actually do in person, then freezes for 1.5 seconds so you have to commit to your throw before the CPU reveals its own.",
+      "A real game of rock paper scissors played against the computer through a webcam. It follows 21 points on your hand as you move and works out your throw purely from where your fingers sit — no training data, nothing learned, just geometry. What makes it feel like the real game is the pump detector: it watches your wrist rise and fall, counts the three pumps you'd actually do in person, then locks your answer in for a second and a half so you have to commit before the computer shows its hand.",
     tech: ["Python", "OpenCV", "MediaPipe", "NumPy", "Claude Code"],
     github: "https://github.com/NotABot122/PythonRockPaperScissors",
     status: "Complete",
     icon: "✌️",
     highlights: [
-      "Real-time hand tracking at 21 landmarks via MediaPipe HandLandmarker in VIDEO mode",
-      "Gesture classifier compares each fingertip against its PIP joint — rock, paper and scissors from pure geometry, no ML training",
-      "Pump detector is a velocity state machine with a threshold and 0.35s cooldown, so shaky hands don't false-trigger the countdown",
-      "1.5s freeze window after the third pump prevents changing your throw after the reveal",
-      "Live skeleton overlay plus a scoreboard panel drawn entirely with OpenCV primitives",
+      "Follows 21 points on your hand live, frame by frame, straight from the webcam",
+      "Reads your throw by checking whether each fingertip sits above or below its middle knuckle — rock, paper and scissors from geometry alone, with nothing trained on",
+      "The pump counter waits for a genuine up-and-down motion and ignores anything within a third of a second of the last one, so a shaky hand doesn't start the countdown early",
+      "Your throw is locked for a second and a half after the third pump, so you can't change it once you've seen what the computer played",
+      "The hand outline and the scoreboard are both drawn straight onto the live video",
     ],
   },
   {
     id: 6,
     title: "Applied Analytics — Student Outcomes",
     description:
-      "An exploratory analysis of what actually separates students who land a job placement from those who don't, across 5,000 student records and 18 variables — prior academics, CGPA, technical and soft skill scores, internships, live projects, attendance and course backlogs. The script loads the dataset with pandas and works through it in deliberate passes: boxplots of every academic, skill and experience variable split by placement status, a 15-variable correlation heatmap, scatter plots pairing CGPA against technical skill, and a salary breakdown deliberately restricted to the students who were actually placed. The useful result turns out to be as much what isn't in the data as what is — pre-university scores, internship count and certifications all land near zero, while backlogs emerge as the single strongest signal.",
+      "A look at what actually separates students who land a job placement from those who don't, across 5,000 student records and 18 things recorded about each one: earlier school results, university grades, technical and people-skill scores, internships, projects, attendance and failed subjects. The analysis works through it in deliberate passes — comparing every measure between students who were placed and students who weren't, checking which ones rise and fall together, pairing grades against technical skill, and looking at salary only among the students who actually got a job. The useful finding is as much about what doesn't matter as what does. School results from before university, the number of internships and the pile of certificates all turn out to mean essentially nothing, while failed subjects stand out as the single clearest warning sign.",
     tech: ["Python", "pandas", "Matplotlib", "seaborn"],
     status: "In Progress",
     icon: "🎓",
     highlights: [
-      "5,000 students × 18 columns, but only 17.3% were placed — so every group comparison runs against a heavily imbalanced outcome",
-      "Backlogs are the strongest correlate of placement at r = −0.40, ahead of CGPA (+0.28), technical skill (+0.25) and soft skill (+0.20)",
-      "Pre-university academics are effectively noise: SSC, HSC, degree percentage and entrance exam score all sit within ±0.02 of zero correlation with placement",
-      "Internships, live projects, certifications and work experience come out just as flat (|r| ≤ 0.02) — the experience section mostly documents a non-result",
-      "Salary is analysed on placed students only, because correlating it across the full sample returns a misleading r = +0.92 — an artifact of every unplaced student being recorded at a salary of 0",
-      "Among placed students no measured factor explains the salary spread (max |r| = 0.08), so the analysis reports that null instead of fitting a story the data won't support",
+      "5,000 students and 18 things recorded about each, but only 17.3% were placed — so every comparison sets a small group against a much larger one",
+      "Failed subjects are the strongest signal in the data and they point downwards: the more a student has, the less likely a placement. They outrank university grades, then technical skill, then people skills",
+      "School results from before university are effectively noise — exam scores, final-year marks and entrance test results all sit within a rounding error of no relationship at all",
+      "Internships, projects, certificates and work experience come out just as flat, so the whole experience section mostly documents a non-result",
+      "Salary is examined only among students who were placed. Including everyone else produces a spectacular-looking result that means nothing, because every unplaced student is recorded as earning zero",
+      "Among the students who were placed, nothing measured explains who ended up earning more — so the analysis says exactly that, instead of fitting a story the data won't support",
     ],
   },
   {
     id: 7,
     title: "Madden 99",
     description:
-      "An NFL roster-building game where two wheels decide your fate and you decide the roster. Spin a season from 2001–2025 and a division, then draft a seven-man skill core — 1 QB, 2 HBs, 3 WRs and a TE — chasing the highest possible team overall. Built on real Madden ratings for every season, with three modes: Classic, Extreme (overalls hidden while you draft) and Hard (one team, one season, no division safety net). It runs inside this portfolio — open the Fun Zone, or hit Live Demo below.",
+      "An NFL roster-building game where two wheels decide your fate and you decide the roster. Spin a season from 2001–2025 and a division, then draft seven players — 1 QB, 2 HBs, 3 WRs and a TE — chasing the highest team overall you can get. Built on real Madden ratings for every season, with three modes: Classic, Extreme (ratings hidden while you draft) and Hard (one team, one season, no division to fall back on). It runs inside this portfolio — open the Fun Zone, or hit Live Demo below.",
     tech: ["TypeScript", "Next.js", "React", "Tailwind", "Python", "Claude Code"],
     github: "https://github.com/NotABot122/madden-99-game",
     demo: "/madden/",
     status: "Complete",
     icon: "🏈",
     highlights: [
-      "25 seasons of real Madden ratings, processed from raw CSVs into per-season JSON at build time",
-      "Three difficulty modes built on one draft engine, varying what information you get to see",
-      "Deployed as a static export mounted at /madden inside this portfolio, so it ships as one site",
-      "Position-aware draft logic enforces the 7-man skill core with one respin per round",
+      "25 seasons of real Madden ratings, tidied up once when the site is built so the game itself loads instantly",
+      "Three difficulty modes run on one draft engine — what changes between them is how much you're allowed to see",
+      "Built into this portfolio rather than hosted somewhere separate, so the whole thing ships as one site",
+      "The draft holds you to the right mix of positions, with one respin per round",
     ],
   },
   {
     id: 8,
     title: "Beale Cipher Cryptanalysis",
     description:
-      "A computational attack on the Beale Ciphers, a famously unsolved 19th-century book cipher. Only one of the three ciphers has ever been broken — using the Declaration of Independence as its key — leaving the other two open for 140 years. This project searches for the missing key texts at scale: it decodes candidate documents as book ciphers across every possible start offset, scores the resulting plaintext with a character-level language model, and analyses the numbering drift in the known solution to constrain what the remaining keys could look like.",
+      "A computational attack on the Beale Ciphers, a famously unsolved puzzle from the 1800s. They are three coded messages in which each number points to a word in some agreed book, and only one has ever been cracked — its key was the Declaration of Independence. The other two have held out for 140 years. This project hunts for the missing books at scale: it tries each candidate document as the key, starting from every possible point in it, scores how much like real English the result reads, and studies the counting mistakes in the one solved message to narrow down what the remaining keys can look like.",
     tech: ["Python", "NumPy", "Statistics", "Cryptanalysis", "Claude Code"],
     status: "In Progress",
     icon: "🔐",
     highlights: [
-      "Vectorised sliding-window search over 1.7 million start offsets across a 40-document candidate corpus",
-      "Character-level language model scores decoded plaintext, with best-window scoring so partial matches still surface",
-      "Drift analysis of cipher B2's known indexing errors against candidate key texts, ranked by Spearman correlation",
-      "Generates a self-contained HTML report of exhibits and rankings for each run",
+      "Tries 1.7 million different starting points across a pool of 40 candidate documents, all at once rather than one after another",
+      "A language model rates how much each decoded attempt reads like English, judging it on its best stretch so a partly-correct key still stands out",
+      "The one solved message contains known counting errors; measuring that same drift against each candidate book gives a second, independent way to rank them",
+      "Every run writes out a single self-contained web page with the evidence and the rankings",
     ],
   },
 ];
@@ -210,7 +215,12 @@ export default function ProjectsWindow({ onOpenGrades }: { onOpenGrades?: () => 
             >
               <span style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize: 18 }}>{project.icon}</span>
-                <span>{project.title}</span>
+                <span>
+                  {project.title}
+                  {project.featured && (
+                    <span title="Featured project" style={{ color: "#808000", marginLeft: 6 }}>★</span>
+                  )}
+                </span>
               </span>
               <span style={{ fontSize: 11, color: statusColors[project.status] }}>
                 ● {project.status}
@@ -256,7 +266,12 @@ export default function ProjectsWindow({ onOpenGrades }: { onOpenGrades?: () => 
           <div style={{ display: "flex", gap: 16, alignItems: "flex-start", marginBottom: 16, padding: 12, background: "#f0f0f0", border: "2px inset #808080" }}>
             <div style={{ fontSize: 48 }}>{selected.icon}</div>
             <div>
-              <div style={{ fontSize: 20, fontFamily: "'VT323', monospace", color: "#000080" }}>{selected.title}</div>
+              <div style={{ fontSize: 20, fontFamily: "'VT323', monospace", color: "#000080" }}>
+                {selected.title}
+                {selected.featured && (
+                  <span title="Featured project" style={{ color: "#808000", marginLeft: 8 }}>★</span>
+                )}
+              </div>
               <div style={{ fontSize: 11, color: statusColors[selected.status], marginTop: 4 }}>
                 ● {selected.status}
               </div>
