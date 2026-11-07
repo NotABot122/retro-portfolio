@@ -69,8 +69,8 @@ export default function BootScreen({ onBoot }: BootScreenProps) {
 
       {phase === "loading" && (
         <div style={{ maxWidth: 400, width: "100%", padding: "0 24px", textAlign: "center" }}>
-          <div style={{ fontSize: 48, color: "#fff", fontFamily: "'VT323', monospace", marginBottom: 12, letterSpacing: 4 }}>
-            PORTFOLIO 95
+          <div style={{ fontSize: 'clamp(18px, calc(9.4vw - 13.5px), 36px)', color: "#fff", fontFamily: "'VT323', monospace", marginBottom: 12, letterSpacing: "0.06em", whiteSpace: "nowrap" }}>
+            ZANE TOUFAILI PORTFOLIO
           </div>
           <div style={{ fontSize: 16, color: "#888", marginBottom: 32 }}>
             Personal Edition
@@ -94,8 +94,8 @@ export default function BootScreen({ onBoot }: BootScreenProps) {
 
       {phase === "press" && (
         <div style={{ textAlign: "center" }} className="animate-fadein">
-          <div style={{ fontSize: 52, color: "#fff", fontFamily: "'VT323', monospace", letterSpacing: 5, marginBottom: 16 }}>
-            PORTFOLIO 95
+          <div style={{ fontSize: 'clamp(18px, calc(9.4vw - 13.5px), 46px)', color: "#fff", fontFamily: "'VT323', monospace", letterSpacing: "0.06em", marginBottom: 16, whiteSpace: "nowrap" }}>
+            ZANE TOUFAILI PORTFOLIO
           </div>
           <div style={{ fontSize: 16, color: "#555", marginBottom: 48 }}>Personal Edition</div>
           <button
